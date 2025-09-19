@@ -41,11 +41,15 @@ class RateLimiter {
   // Limpiar cache periódicamente
   cleanup() {
     const now = Date.now();
-    for (const [key, value] of this.cache.entries()) {
+    const keysToDelete: string[] = [];
+    
+    this.cache.forEach((value, key) => {
       if (now > value.resetTime) {
-        this.cache.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+    
+    keysToDelete.forEach(key => this.cache.delete(key));
   }
 }
 
