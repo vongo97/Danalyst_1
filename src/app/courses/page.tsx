@@ -5,6 +5,13 @@ import { CourseList } from '@/components/courses/course-list';
 import { Separator } from '@/components/ui/separator';
 import { Course } from '@/data/courses';
 
+// Declarar el tipo global para MiniCourse
+declare global {
+  interface Window {
+    MiniCourse: any;
+  }
+}
+
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +34,24 @@ export default function CoursesPage() {
     }
 
     fetchCourses();
+  }, []);
+
+  // Inicializar MiniCourse después de que el componente se monte
+  useEffect(() => {
+    const initMiniCourse = () => {
+      if (typeof window !== 'undefined' && window.MiniCourse) {
+        const app = new window.MiniCourse();
+        app.init({
+          code: "python-e-ia-para-principiantes-fundamentos-datos-y-modelos-e8dba3", 
+          share: false
+        });
+      } else {
+        // Reintentar después de 1 segundo si MiniCourse no está disponible
+        setTimeout(initMiniCourse, 1000);
+      }
+    };
+
+    initMiniCourse();
   }, []);
 
   if (loading) {
@@ -117,10 +142,8 @@ export default function CoursesPage() {
               <div>
                 <div 
                   id="mcg-form-python-e-ia-para-principiantes-fundamentos-datos-y-modelos-e8dba3"
-                  className="w-full min-h-[300px] bg-gray-50 rounded-lg flex items-center justify-center"
-                >
-                  <p className="text-gray-500">Cargando curso...</p>
-                </div>
+                  className="w-full min-h-[400px] bg-gray-50 rounded-lg"
+                ></div>
               </div>
             </div>
           </div>
