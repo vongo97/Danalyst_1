@@ -11,8 +11,8 @@ const prismaConfig = {
       url: process.env.POSTGRES_PRISMA_URL,
     },
   },
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] as const : ['error'],
-};
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+} as const;
 
 if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient(prismaConfig);
