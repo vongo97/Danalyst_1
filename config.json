@@ -1,0 +1,19 @@
+{
+  "database": {
+    "DATABASE_URL": "sqlserver://danalyst-sqll.database.windows.net:1433;database=Danalyst_sql;user=<username>;password=<password>;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net",
+    "SHADOW_DATABASE_URL": "mysql://<username>:<password>@danalyst-sqll.database.windows.net.mysql.database.azure.com:3306/prisma_shadow?sslmode=require"
+  },
+  "auth": {
+    "NEXTAUTH_SECRET": "<secret-key>",
+    "NEXTAUTH_URL": "https://danalyst-bdfebxhubde0hge2.canadacentral-01.azurewebsites.net/api/auth/callback/azure-ad",
+    "azure": {
+      "AZURE_AD_CLIENT_ID": "<client-id>",
+      "AZURE_AD_CLIENT_SECRET": "<client-secret>",
+      "AZURE_AD_TENANT_ID": "<tenant-id>"
+    },
+    "google": {
+      "GOOGLE_CLIENT_ID": "<client-id>",
+      "GOOGLE_CLIENT_SECRET": "<client-secret>"
+    }
+  }
+}

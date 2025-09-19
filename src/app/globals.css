@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.13 0.028 261.692);
+  /* resto de variables */
+}
+
+.dark {
+  --background: oklch(0.13 0.028 261.692);
+  --foreground: oklch(0.985 0.002 247.839);
+  /* resto de variables */
+}
+
+/* Eliminar @layer base y usar CSS normal */
+* {
+  border-color: var(--border);
+  outline-color: rgba(112, 112, 112, 0.5);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

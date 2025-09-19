@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id                                       Int                        @id @default(autoincrement()) @map("usuario_id")
+  name                                     String                     @map("nombre") @db.VarChar(255)
+  email                                    String                     @unique(map: "email") @db.VarChar(255)
+  passwordHash                             String?                    @map("clave_hash") @db.VarChar(255)
+  membershipId                             Int?                       @map("membresia_id")
+  role                                     String?                    @default("user") @map("rol") @db.VarChar(50)
+  createdAt                                DateTime?                  @default(now()) @map("fecha_creacion") @db.Timestamp(0)
+  updatedAt                                DateTime?                  @default(now()) @updatedAt @map("fecha_actualizacion") @db.Timestamp(0)
+  accounts                                 account[]
+  account                                  account[]                  @relation("UserAccounts")
+  entradasblog                             entradasblog[]
+  mentorias_mentorias_usuario_idTousuarios mentorias[]                @relation("mentorias_usuario_idTousuarios")
+  mentorias_mentorias_mentor_idTousuarios  mentorias[]                @relation("mentorias_mentor_idTousuarios")
+  pagos                                    pagos[]
+  password_resets                          PasswordReset[]
+  plantillasgeneradas                      plantillasgeneradas[]
+  progresousuario                          progresousuario[]
+  recursosguardadosusuario                 recursosguardadosusuario[]
+  sessions                                 session[]
+  session                                  session[]                  @relation("UserSessions")
+  membresias                               membresias?                @relation(fields: [membershipId], references: [membresia_id], onUpdate: NoAction, map: "usuarios_ibfk_1")
+
+  @@index([email], map: "idx_usuarios_email")
+  @@index([membershipId], map: "idx_usuarios_membresia_id")
+  @@map("usuarios")
+}
+
+model PasswordReset {
+  id         Int       @id @default(autoincrement())
+  email      String    @db.VarChar(255)
+  token      String    @unique(map: "token") @db.VarChar(255)
+  expires    DateTime  @db.DateTime(0)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  usuarios   User      @relation(fields: [email], references: [email], onDelete: Cascade, onUpdate: NoAction, map: "password_resets_ibfk_1")
+
+  @@index([email], map: "email")
+  @@map("password_resets")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model categorias {
+  categoria_id Int            @id @default(autoincrement())
+  nombre       String         @unique(map: "nombre") @db.VarChar(100)
+  tipo         String         @db.VarChar(50)
+  cursos       cursos[]
+  entradasblog entradasblog[]
+}
+
+model cursos {
+  curso_id            Int               @id @default(autoincrement())
+  titulo              String            @db.VarChar(255)
+  descripcion         String            @db.Text
+  url_imagen          String?           @db.VarChar(255)
+  categoria_id        Int?
+  nivel               String?           @db.VarChar(50)
+  duracion            String?           @db.VarChar(100)
+  enlace              String?           @db.VarChar(255)
+  fecha_creacion      DateTime?         @default(now()) @db.Timestamp(0)
+  fecha_actualizacion DateTime?         @default(now()) @db.Timestamp(0)
+  categorias          categorias?       @relation(fields: [categoria_id], references: [categoria_id], onUpdate: NoAction, map: "cursos_ibfk_1")
+  progresousuario     progresousuario[]
+
+  @@index([categoria_id], map: "idx_cursos_categoria_id")
+  @@index([nivel], map: "idx_cursos_nivel")
+  @@index([titulo], map: "idx_cursos_titulo")
+}
+
+model entradasblog {
+  entrada_id          Int         @id @default(autoincrement())
+  slug                String      @unique(map: "slug") @db.VarChar(255)
+  titulo              String      @db.VarChar(255)
+  resumen             String      @db.Text
+  contenido_md        String      @db.Text
+  contenido_html      String?     @db.Text
+  autor_id            Int?
+  categoria_id        Int?
+  url_miniatura       String?     @db.VarChar(255)
+  url_imagen          String?     @db.VarChar(255)
+  fecha_publicacion   DateTime?   @default(now()) @db.Timestamp(0)
+  fecha_actualizacion DateTime?   @default(now()) @db.Timestamp(0)
+  usuarios            User?       @relation(fields: [autor_id], references: [id], onUpdate: NoAction, map: "entradasblog_ibfk_1")
+  categorias          categorias? @relation(fields: [categoria_id], references: [categoria_id], onUpdate: NoAction, map: "entradasblog_ibfk_2")
+
+  @@index([autor_id], map: "idx_entradasblog_autor_id")
+  @@index([categoria_id], map: "idx_entradasblog_categoria_id")
+  @@index([fecha_publicacion(sort: Desc)], map: "idx_entradasblog_fecha_publicacion")
+  @@index([slug], map: "idx_entradasblog_slug")
+}
+
+model membresias {
+  membresia_id    Int      @id @default(autoincrement())
+  nombre_plan     String   @unique(map: "nombre_plan") @db.VarChar(100)
+  precio          Decimal  @db.Decimal(10, 2)
+  periodo         String   @db.VarChar(50)
+  descripcion     String?  @db.Text
+  caracteristicas Json?
+  esta_activa     Boolean? @default(true)
+  pagos           pagos[]
+  usuarios        User[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model mentorias {
+  mentoria_id                             Int      @id @default(autoincrement())
+  usuario_id                              Int
+  mentor_id                               Int?
+  nombre_mentor_externo                   String?  @db.VarChar(255)
+  fecha_hora_sesion                       DateTime @db.Timestamp(0)
+  duracion_minutos                        Int?
+  estado                                  String?  @default("programada") @db.VarChar(50)
+  notas                                   String?  @db.Text
+  requisito_plan                          String?  @db.VarChar(100)
+  usuarios_mentorias_usuario_idTousuarios User     @relation("mentorias_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mentorias_ibfk_1")
+  usuarios_mentorias_mentor_idTousuarios  User?    @relation("mentorias_mentor_idTousuarios", fields: [mentor_id], references: [id], onUpdate: NoAction, map: "mentorias_ibfk_2")
+
+  @@index([fecha_hora_sesion], map: "idx_mentorias_fecha_hora_sesion")
+  @@index([mentor_id], map: "idx_mentorias_mentor_id")
+  @@index([usuario_id], map: "idx_mentorias_usuario_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model pagos {
+  pago_id        Int         @id @default(autoincrement())
+  usuario_id     Int
+  membresia_id   Int?
+  monto          Decimal     @db.Decimal(10, 2)
+  fecha_pago     DateTime?   @default(now()) @db.Timestamp(0)
+  estado         String      @db.VarChar(50)
+  metodo_pago    String?     @db.VarChar(100)
+  transaccion_id String?     @unique(map: "transaccion_id") @db.VarChar(255)
+  usuarios       User        @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "pagos_ibfk_1")
+  membresias     membresias? @relation(fields: [membresia_id], references: [membresia_id], onUpdate: NoAction, map: "pagos_ibfk_2")
+
+  @@index([membresia_id], map: "idx_pagos_membresia_id")
+  @@index([transaccion_id], map: "idx_pagos_transaccion_id")
+  @@index([usuario_id], map: "idx_pagos_usuario_id")
+}
+
+model plantillasgeneradas {
+  plantilla_id       Int       @id @default(autoincrement())
+  usuario_id         Int
+  proposito          String    @db.Text
+  audiencia          String?   @db.VarChar(255)
+  contenido_generado String    @db.Text
+  fecha_creacion     DateTime? @default(now()) @db.Timestamp(0)
+  usuarios           User      @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "plantillasgeneradas_ibfk_1")
+
+  @@index([usuario_id], map: "idx_plantillasgeneradas_usuario_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model progresousuario {
+  progreso_id         Int       @id @default(autoincrement())
+  usuario_id          Int
+  curso_id            Int
+  modulos_completados Int?      @default(0)
+  modulos_totales     Int?
+  ultimo_acceso       DateTime? @default(now()) @db.Timestamp(0)
+  estado              String?   @default("en_progreso") @db.VarChar(50)
+  usuarios            User      @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "progresousuario_ibfk_1")
+  cursos              cursos    @relation(fields: [curso_id], references: [curso_id], onDelete: Cascade, onUpdate: NoAction, map: "progresousuario_ibfk_2")
+
+  @@unique([usuario_id, curso_id], map: "usuario_id")
+  @@index([curso_id], map: "idx_progresousuario_curso_id")
+  @@index([usuario_id], map: "idx_progresousuario_usuario_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model recursosguardadosusuario {
+  recurso_guardado_id Int       @id @default(autoincrement())
+  usuario_id          Int
+  tipo_recurso        String    @db.VarChar(50)
+  recurso_id_fk       Int
+  fecha_guardado      DateTime? @default(now()) @db.Timestamp(0)
+  usuarios            User      @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "recursosguardadosusuario_ibfk_1")
+
+  @@unique([usuario_id, tipo_recurso, recurso_id_fk], map: "usuario_id")
+  @@index([tipo_recurso], map: "idx_recursosguardados_tipo_recurso")
+  @@index([usuario_id], map: "idx_recursosguardados_usuario_id")
+}
+
+model account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+  usuarios          User    @relation("UserAccounts", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique(map: "Session_sessionToken_key")
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+  usuarios     User     @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "Session_userId_fkey")
+}
+
+model verificationtoken {
+  identifier String
+  token      String   @unique(map: "VerificationToken_token_key")
+  expires    DateTime
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
+}

@@ -1,0 +1,13 @@
+{
+  "name": "test-sql-connection",
+  "version": "1.0.0",
+  "description": "Script para probar conexión a SQL Server",
+  "main": "test-mssql.js",
+  "scripts": {
+    "test": "node test-mssql.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "mssql": "^9.1.1"
+  }
+}
