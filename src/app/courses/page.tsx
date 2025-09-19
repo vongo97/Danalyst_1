@@ -94,7 +94,42 @@ export default function CoursesPage() {
       <div className="container mx-auto px-4 py-8">
         <Separator className="my-8" />
 
+        {/* Curso Destacado - Python e IA */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-center mb-8">🔥 Curso Destacado</h2>
+          <div className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-indigo-500">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-indigo-600">
+                  Python e IA para Principiantes
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Aprende los fundamentos de Python e Inteligencia Artificial desde cero. 
+                  Curso completo con datos y modelos prácticos.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">🐍 Python</span>
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">🤖 IA</span>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">📊 Datos</span>
+                  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">🎯 Principiantes</span>
+                </div>
+              </div>
+              <div>
+                <div 
+                  id="mcg-form-python-e-ia-para-principiantes-fundamentos-datos-y-modelos-e8dba3"
+                  className="w-full min-h-[300px] bg-gray-50 rounded-lg flex items-center justify-center"
+                >
+                  <p className="text-gray-500">Cargando curso...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Separator className="my-8" />
+        
         <div className="bg-gray-50">
+          <h2 className="text-3xl font-bold text-center mb-8">Todos los Cursos</h2>
           <CourseList courses={courses} />
         </div>
       </div>

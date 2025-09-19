@@ -69,6 +69,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <meta httpEquiv="Access-Control-Allow-Origin" content="https://share.minicoursegenerator.com/" />
+        <script src="https://share.minicoursegenerator.com/viewer.js"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            const app = new MiniCourse();
+            document.addEventListener("DOMContentLoaded", function () {
+              app.init({
+                code: "python-e-ia-para-principiantes-fundamentos-datos-y-modelos-e8dba3", 
+                share: false
+              });
+            });
+          `
+        }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
