@@ -5,22 +5,25 @@ import { PrismaClient } from '@prisma/client';
 
 let prisma: PrismaClient;
 
-const prismaConfig = {
-  datasources: {
-    db: {
-      url: process.env.POSTGRES_PRISMA_URL,
-    },
-  },
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-} as const;
-
 if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient(prismaConfig);
+  prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.POSTGRES_PRISMA_URL,
+      },
+    },
+  });
 } else {
   // @ts-ignore
   if (!global.prisma) {
     // @ts-ignore
-    global.prisma = new PrismaClient(prismaConfig);
+    global.prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.POSTGRES_PRISMA_URL,
+        },
+      },
+    });
   }
   // @ts-ignore
   prisma = global.prisma;
