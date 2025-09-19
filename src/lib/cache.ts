@@ -41,18 +41,25 @@ class MemoryCache {
   // Limpiar items expirados
   cleanup(): void {
     const now = Date.now();
-    for (const [key, item] of this.cache.entries()) {
+    const keysToDelete: string[] = [];
+    
+    this.cache.forEach((item, key) => {
       if (now - item.timestamp > item.ttl) {
-        this.cache.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+    
+    keysToDelete.forEach(key => this.cache.delete(key));
   }
 
   // Obtener estadísticas del cache
   getStats() {
+    const keys: string[] = [];
+    this.cache.forEach((_, key) => keys.push(key));
+    
     return {
       size: this.cache.size,
-      keys: Array.from(this.cache.keys())
+      keys
     };
   }
 }
